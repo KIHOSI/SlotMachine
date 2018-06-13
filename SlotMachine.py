@@ -12,10 +12,11 @@ while True:
         seg1.closeAllLight()
         seg2.closeAllLight()
         seg3.closeAllLight()
-        break    
-    seg1.call7Segment(int(pinNum)) # String to int
-    seg2.call7Segment(int(pinNum))
-    seg3.call7Segment(int(pinNum))
+        break
+    else:    
+        seg1.call7Segment(random.randint(0,9)) # String to int
+        seg2.call7Segment(random.randint(0,9)) # 隨機產生0~9
+        seg3.call7Segment(random.randint(0,9))
 #seg.call7Segment(0)
 #seg.closeAllLight()
 #seg.openLight(3)
