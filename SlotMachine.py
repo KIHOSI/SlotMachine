@@ -1,11 +1,14 @@
 from Seven_Segement import SevenSegement #import Seven_Segement.py
 import random
 import os
+import sys
 
 # 設定每一個七節管(Wpi)       
 seg1 = SevenSegement(7,0,2,3,12,13,14)
 seg2 = SevenSegement(21,22,23,24,25,29,28)
 seg3 = SevenSegement(27,26,11,10,6,5,4)
+
+print(sys.argv[1])
 
 #Game Start
 while True:

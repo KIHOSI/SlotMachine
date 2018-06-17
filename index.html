@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+  	<title>Slot Machine</title>
+	<style>
+		body{
+			margin:50px;
+			font-size:15px;
+		}
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script charset="UTF-8" type="text/javascript">
+		if(window.DeviceOrientationEvent){ //偵測手機陀螺儀事件-deviceorientation
+			//alpha是繞Z軸旋轉角度，數值為0度到360度
+			//beta是繞X軸旋轉角度，數值為-180度到180度
+			//gamma是繞y軸旋轉的角度，數值為-90度到90度。
+			window.addEventListener('deviceorientation',function(event){
+				var a = document.getElementById('alpha'),
+				b = document.getElementById('beta'),
+				g = document.getElementById('gamma'),
+				alpha = event.alpha,
+				beta = event.beta,
+				gamma = event.gamma;
+
+				a.innerHTML = Math.round(alpha); //四捨五入
+				b.innerHTML = Math.round(beta);
+				g.innerHTML = Math.round(gamma);
+			},false);
+
+			window.addEventListener('devicemotion',function(event){ //行動裝置的加速度計
+				var tx = document.getElementById('tx'),
+				ty = document.getElementById('ty'),
+				tz = document.getElementById('tz'),
+				success = document.getElementById('success'),
+				x = event.acceleration.x,
+				y = event.acceleration.y,
+				z = event.acceleration.z;
+
+				tx.innerHTML = Math.round(x);
+				ty.innerHTML = Math.round(y);
+				tz.innerHTML = Math.round(z);
+				if(Math.round(x) > 2){ //搖動手機一定程度時，觸發Slot Machine跑
+					success.innerHTML = 'success';
+					/*var spawn = require("child_process").spawn;
+					var pythonProcess = spawn('python',["home/pi/SlotMachineFile/SlotMachine.py"],"test");*/
+					/*$.ajax({
+						type: "POST",
+						url: "/home/pi/SlotMachineFile/SlotMachine.py",
+						data: { param: text }
+					}).done(function(o){
+					});*/
+
+				}else{
+					success.innerHTML = '';
+				}
+			},false);
+
+		}else{
+			document.querySelector('body').innerHTML = '你的瀏覽器不支援喔!';
+		}
+	</script>
+</head>
+<body>
+	<h1>Slot Machine!</h1>
+	alpha:<span id="alpha"></span><br/>
+	beta:<span id="beta"></span><br/>
+	gamma:<span id="gamma"></span><br/><br/>
+
+	tx:<span id="tx"></span><br/>
+	ty:<span id="ty"></span><br/>
+	tz:<span id="tz"></span><br/><br/>
+
+	<span id="success"></span>
+
+</body>
+</html>
