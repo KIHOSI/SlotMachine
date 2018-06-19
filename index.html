@@ -11,6 +11,10 @@
 	</style>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script charset="UTF-8" type="text/javascript">
+		var i = 0;
+		var string = 'i = '+i+'\n';				
+					
+
 		if(window.DeviceOrientationEvent){ //偵測手機陀螺儀事件-deviceorientation
 			//alpha是繞Z軸旋轉角度，數值為0度到360度
 			//beta是繞X軸旋轉角度，數值為-180度到180度
@@ -33,6 +37,8 @@
 				ty = document.getElementById('ty'),
 				tz = document.getElementById('tz'),
 				success = document.getElementById('success'),
+				num = document.getElementById('num'),
+				count = document.getElementById('count'),
 				x = event.acceleration.x,
 				y = event.acceleration.y,
 				z = event.acceleration.z;
@@ -40,21 +46,35 @@
 				tx.innerHTML = Math.round(x);
 				ty.innerHTML = Math.round(y);
 				tz.innerHTML = Math.round(z);
-				if(Math.round(x) > 2){ //搖動手機一定程度時，觸發Slot Machine跑
+				if(Math.round(x) > 32){ //搖動手機一定程度時，觸發Slot Machine跑
+					//string = string + 'i ='+i+'\n' ;
+					//num.innerHTML = string;
+					i++;
+					num.innerHTML = ""+Math.round(x);
 					success.innerHTML = 'success';
-					/*var spawn = require("child_process").spawn;
-					var pythonProcess = spawn('python',["home/pi/SlotMachineFile/SlotMachine.py"],"test");*/
-					/*$.ajax({
-						type: "POST",
-						url: "/home/pi/SlotMachineFile/SlotMachine.py",
-						data: { param: text }
-					}).done(function(o){
-					});*/
-
+					count.innerHTML = 'i='+i+'\n';
+					
+					$.ajax({
+						type:'POST',
+						url:'/slotmachine',
+						data:{
+							str:'fuck u',
+						},
+					});
 				}else{
 					success.innerHTML = '';
 				}
 			},false);
+		
+		function gameover(){ //關閉7節管
+			$.ajax({
+				type:'POST',
+				url:'/gameover',
+				data:{
+					test:'test',
+				},
+			});
+		}
 
 		}else{
 			document.querySelector('body').innerHTML = '你的瀏覽器不支援喔!';
@@ -71,7 +91,9 @@
 	ty:<span id="ty"></span><br/>
 	tz:<span id="tz"></span><br/><br/>
 
-	<span id="success"></span>
-
+	<span id="success"></span><br/>
+	<span id="num"></span><br/>
+	<span id="count"></span><br/>
+	<button onclick="gameover()">Game Over</button>
 </body>
 </html>

@@ -1,46 +1,43 @@
-var http = require('http').createServer(handler);  //require http server, and create server 
-//with function handler()
-var fs = require('fs'); //require filesystem module
-var io = require('socket.io')(http); //require socket.io module and pass the http object (server)
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var exec = require('child_process').exec;
+app.use(bodyParser.urlencoded());
 
-http.listen('8080'); //listen to port 8080
-
-function handler(req,res){ //create server
-	fs.readFile(__dirname + '/index.html',function(err,data){
-		//read file index.html
+app.get('/', function (req, res) { //一開始，就回傳index.html
+   res.sendFile('/home/pi/SlotMachineFile/index.html'); //absolute path
+   exec('python SlotMachine.py ',function(err,stdout,stderr){ //initailize SlotMachine.py
 		if(err){
-			res.writeHead(404,{'Content-Type':'text/html'}); //display 404 on error
-			return res.end("404 Not Found");
+			console.log('stderr',err);
 		}
-		res.writeHead(200,{'Content-Type':'text/html'}); //write HTML
-		res.write(data);  //write data from index.html
-		return res.end();
-	});
-}
+		if(stdout){
+			console.log('stdout',stdout);
+		}
+	}); 
+})
 
-io.sockets.on('connection',function (socket){ // WebSocket Connection
-	//var lightvalue = 0; //static variable for current status
-
-	/*pushButton.watch(function (err, value) { //Watch for hardware interrupts on pushButton
-    	if (err) { //if an error
-      		console.error('There was an error', err); //output error message to console
-      		return;
-    	}
-    	lightvalue = value;
-    	socket.emit('light', lightvalue); //send button status to client
-  	});*/
-
-	/*socket.on('light',function(data){ //get light switch status from client (button or checkbox)
-		lightvalue = data;
-		//if(lightvalue != LED.readSync()){ //only change LED if status has changed
-			 //LED.writeSync(lightvalue); //turn LED on or off
-		//}
-	});*/
+app.post('/slotmachine',function(req,res){ //執行SlotMachine.py
+	console.log("callSlotMachine");
+	exec("python -c 'import SlotMachine; SlotMachine.gameStart()'",function(err,stdout,stderr){
+		if(err){
+			console.log('stderr',err);
+		}
+		if(stdout){
+			console.log('stdout',stdout);
+		}
+	}); 
 });
 
-process.on('SIGINT', function () { //on ctrl+c
-  //LED.writeSync(0); // Turn LED off
-  //LED.unexport(); // Unexport LED GPIO to free resources
-  //pushButton.unexport(); // Unexport Button GPIO to free resources
-  process.exit(); //exit completely
+app.post('/gameover',function(req,res){ //遊戲結束，關閉7節管
+	console.log('works');
+	exec("python -c 'import SlotMachine; SlotMachine.closeSegement()'",function(err,stdout,stderr){
+		if(err){
+			console.log('stderr',err);
+		}
+		if(stdout){
+			console.log('stdout',stdout);
+		}
+	}); 
 });
+
+app.listen(8080);
