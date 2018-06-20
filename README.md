@@ -107,7 +107,7 @@ So you have to install them before.
 And I write two python file, ```SlotMachine.py``` and ```Seven_Segement.py```. ```Seven_Segement.py``` modelize how seven-segment blink and ```SlotMachine.py``` import ```Seven_Segement.py``` file and set three segements' show numbers. 
 **Notice:** It uses **Wiring Pi pin number**!
 
-SlotMachine.py
+*SlotMachine.py*
 ```
 from Seven_Segement import SevenSegement #import Seven_Segement.py
 import random
@@ -145,7 +145,7 @@ def closeSegement(): # close all seven-segements
 
 ```
 
-Seven_Segement.py
+*Seven_Segement.py*
 ```
 import wiringpi
 wiringpi.wiringPiSetup() # For Wpi pin numbering
@@ -242,7 +242,7 @@ I use ```express```, ```body-parser``` package to set up node.js server.
     npm install body-parser
 ```
 
-webserver.js
+*webserver.js*
 ```
 var express = require('express');
 var app = express();
@@ -291,7 +291,7 @@ app.listen(8080); //port:8080
 
 ```
 
-index.html
+*index.html*
 ```
 <!DOCTYPE html>
 <html>
