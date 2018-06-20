@@ -2,6 +2,8 @@
 
 This is a Iot class final project. It's a slot machine game used by raspberry pi.
 
+![](https://i.imgur.com/idJTKBQ.jpg)
+
 ## Equipment List
 - Raspberry Pi 3
 - Micro SD Card
@@ -41,7 +43,7 @@ Conda is an open source package management system and environment management sys
 In this project, we use (berryconda)[https://github.com/jjhelmus/berryconda], is based on conda.
 
 
-### Install Berryconda
+#### Install Berryconda
 ``` wget http://repo.continuum.io/berryconda/Berryconda3-latest-Linux-armv7l.sh # download berryconda file
     sudo md5sum Berryconda3-latest-Linux-armv7l.sh # (optional) check md5
     chmod +x Berryconda3-2.0.0-Linux-armv7l.sh # when you download file, change the authority to make this file executable
@@ -72,3 +74,14 @@ When conda asks you to proceed, type ```y```
   proceed ([y]/n)?
 ```
 And then inovke this environment.
+```
+    source activate first_env # inovke environment
+    source deactivate # close environment
+```
+
+### Conda install 
+
+### Blink Seven Segemnet
+Before doing this step, you have to know (Seven-segement Display)[https://en.wikipedia.org/wiki/Seven-segment_display] and connect correct dupont lines to correct ports.
+
+In this part, I use ```python``` language and ```wiringpi``` python language to blink seven-segement.
