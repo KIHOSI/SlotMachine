@@ -15,4 +15,4 @@ This is a Iot class final project.
 ## Program Language
 - Python3
 - Node.js
-- html、ajax
+- HTML、AJAX
