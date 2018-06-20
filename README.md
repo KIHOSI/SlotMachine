@@ -104,7 +104,8 @@ So you have to install them before.
     pip install wiringpi
 ```
 
-And I write two python file, ```SlotMachine.py``` and ```Seven_Segement.py```. 
+And I write two python file, ```SlotMachine.py``` and ```Seven_Segement.py```. ```Seven_Segement.py``` modelize how seven-segment blink and ```SlotMachine.py``` import ```Seven_Segement.py``` file and set three segements' show numbers. 
+**Notice:** It uses **Wiring Pi pin number**!
 
 SlotMachine.py
 ```
@@ -227,3 +228,166 @@ class SevenSegement():
             wiringpi.digitalRead(i) # Read num
 ```
 
+### Set Up Node.js Server and website
+First, you have to install [node.js](https://www.w3schools.com/nodejs/nodejs_raspberrypi.asp) package.
+```
+    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - # download it
+    sudo apt-get install -y nodejs
+    node -v # check node.js version
+```
+
+I use ```express``` package to set up node.js server.
+```
+    npm install express
+```
+
+webserver.js
+```
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var exec = require('child_process').exec;
+app.use(bodyParser.urlencoded());
+
+app.get('/', function (req, res) { //一開始，就回傳index.html
+   res.sendFile('/home/pi/SlotMachineFile/index.html'); //absolute path
+   exec('python SlotMachine.py ',function(err,stdout,stderr){ //initailize SlotMachine.py
+		if(err){
+			console.log('stderr',err);
+		}
+		if(stdout){
+			console.log('stdout',stdout);
+		}
+	}); 
+})
+
+app.post('/slotmachine',function(req,res){ //執行SlotMachine.py
+	console.log("callSlotMachine");
+	exec("python -c 'import SlotMachine; SlotMachine.gameStart()'",function(err,stdout,stderr){
+		if(err){
+			console.log('stderr',err);
+		}
+		if(stdout){
+			console.log('stdout',stdout);
+		}
+	}); 
+});
+
+app.post('/gameover',function(req,res){ //遊戲結束，關閉7節管
+	console.log('works');
+	exec("python -c 'import SlotMachine; SlotMachine.closeSegement()'",function(err,stdout,stderr){
+		if(err){
+			console.log('stderr',err);
+		}
+		if(stdout){
+			console.log('stdout',stdout);
+		}
+	}); 
+});
+
+app.listen(8080);
+
+```
+
+index.html
+```
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+  	<title>Slot Machine</title>
+	<style>
+		body{
+			margin:50px;
+			font-size:15px;
+		}
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script charset="UTF-8" type="text/javascript">
+		var i = 0;
+		var string = 'i = '+i+'\n';				
+					
+
+		if(window.DeviceOrientationEvent){ //偵測手機陀螺儀事件-deviceorientation
+			//alpha是繞Z軸旋轉角度，數值為0度到360度
+			//beta是繞X軸旋轉角度，數值為-180度到180度
+			//gamma是繞y軸旋轉的角度，數值為-90度到90度。
+			window.addEventListener('deviceorientation',function(event){
+				var a = document.getElementById('alpha'),
+				b = document.getElementById('beta'),
+				g = document.getElementById('gamma'),
+				alpha = event.alpha,
+				beta = event.beta,
+				gamma = event.gamma;
+
+				a.innerHTML = Math.round(alpha); //四捨五入
+				b.innerHTML = Math.round(beta);
+				g.innerHTML = Math.round(gamma);
+			},false);
+
+			window.addEventListener('devicemotion',function(event){ //行動裝置的加速度計
+				var tx = document.getElementById('tx'),
+				ty = document.getElementById('ty'),
+				tz = document.getElementById('tz'),
+				success = document.getElementById('success'),
+				num = document.getElementById('num'),
+				count = document.getElementById('count'),
+				x = event.acceleration.x,
+				y = event.acceleration.y,
+				z = event.acceleration.z;
+
+				tx.innerHTML = Math.round(x);
+				ty.innerHTML = Math.round(y);
+				tz.innerHTML = Math.round(z);
+				if(Math.round(x) > 32){ //搖動手機一定程度時，觸發Slot Machine跑
+					//string = string + 'i ='+i+'\n' ;
+					//num.innerHTML = string;
+					i++;
+					num.innerHTML = ""+Math.round(x);
+					success.innerHTML = 'success';
+					count.innerHTML = 'i='+i+'\n';
+					
+					$.ajax({
+						type:'POST',
+						url:'/slotmachine',
+						data:{
+							str:'fuck u',
+						},
+					});
+				}else{
+					success.innerHTML = '';
+				}
+			},false);
+		
+		function gameover(){ //關閉7節管
+			$.ajax({
+				type:'POST',
+				url:'/gameover',
+				data:{
+					test:'test',
+				},
+			});
+		}
+
+		}else{
+			document.querySelector('body').innerHTML = '你的瀏覽器不支援喔!';
+		}
+	</script>
+</head>
+<body>
+	<h1>Slot Machine!</h1>
+	alpha:<span id="alpha"></span><br/>
+	beta:<span id="beta"></span><br/>
+	gamma:<span id="gamma"></span><br/><br/>
+
+	tx:<span id="tx"></span><br/>
+	ty:<span id="ty"></span><br/>
+	tz:<span id="tz"></span><br/><br/>
+
+	<span id="success"></span><br/>
+	<span id="num"></span><br/>
+	<span id="count"></span><br/>
+	<button onclick="gameover()">Game Over</button>
+</body>
+</html>
+```
