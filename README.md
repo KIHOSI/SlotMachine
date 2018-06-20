@@ -242,6 +242,9 @@ I use ```express```, ```body-parser``` package to set up node.js server.
     npm install body-parser
 ```
 
+```webserver.js``` is to set up server to open website, and get post data to invoke SlotMachine.py .
+```index.html``` is to get mobile's gyroscope event and post data to webserver.js by AJAX.
+
 **webserver.js**
 ```
 var express = require('express');
