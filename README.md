@@ -16,3 +16,6 @@ This is a Iot class final project.
 - Python3
 - Node.js
 - HTML、AJAX
+
+## Demo Video
+[Demo](https://drive.google.com/file/d/1DY_vKu5d-Dqso9tiCLdpYzbAYrO7x64q/view?usp=sharing)
