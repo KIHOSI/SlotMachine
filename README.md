@@ -236,20 +236,21 @@ First, you have to install [node.js](https://www.w3schools.com/nodejs/nodejs_ras
     node -v # check node.js version
 ```
 
-I use ```express``` package to set up node.js server.
+I use ```express```, ```body-parser``` package to set up node.js server.
 ```
     npm install express
+    npm install body-parser
 ```
 
 webserver.js
 ```
 var express = require('express');
 var app = express();
-var bodyParser = require('body-parser');
-var exec = require('child_process').exec;
+var bodyParser = require('body-parser'); # Get ajax post data from index.html
+var exec = require('child_process').exec; # To execute SlotMachine.py and call it's function
 app.use(bodyParser.urlencoded());
 
-app.get('/', function (req, res) { //一開始，就回傳index.html
+app.get('/', function (req, res) { // In beginning, return index.html to client
    res.sendFile('/home/pi/SlotMachineFile/index.html'); //absolute path
    exec('python SlotMachine.py ',function(err,stdout,stderr){ //initailize SlotMachine.py
 		if(err){
@@ -261,8 +262,9 @@ app.get('/', function (req, res) { //一開始，就回傳index.html
 	}); 
 })
 
-app.post('/slotmachine',function(req,res){ //執行SlotMachine.py
-	console.log("callSlotMachine");
+app.post('/slotmachine',function(req,res){ //call SlotMachine.py gameStart() function to blink seven-segements
+	console.log("callSlotMachine");  
+	// use cmd to execute python script and call it's function
 	exec("python -c 'import SlotMachine; SlotMachine.gameStart()'",function(err,stdout,stderr){
 		if(err){
 			console.log('stderr',err);
@@ -273,7 +275,7 @@ app.post('/slotmachine',function(req,res){ //執行SlotMachine.py
 	}); 
 });
 
-app.post('/gameover',function(req,res){ //遊戲結束，關閉7節管
+app.post('/gameover',function(req,res){ //Game over, call SlotMachine.py closeSegement()
 	console.log('works');
 	exec("python -c 'import SlotMachine; SlotMachine.closeSegement()'",function(err,stdout,stderr){
 		if(err){
@@ -285,7 +287,7 @@ app.post('/gameover',function(req,res){ //遊戲結束，關閉7節管
 	}); 
 });
 
-app.listen(8080);
+app.listen(8080); //port:8080
 
 ```
 
@@ -308,10 +310,10 @@ index.html
 		var string = 'i = '+i+'\n';				
 					
 
-		if(window.DeviceOrientationEvent){ //偵測手機陀螺儀事件-deviceorientation
-			//alpha是繞Z軸旋轉角度，數值為0度到360度
-			//beta是繞X軸旋轉角度，數值為-180度到180度
-			//gamma是繞y軸旋轉的角度，數值為-90度到90度。
+		if(window.DeviceOrientationEvent){ //detecte mobile's gyroscope event - deviceorientation
+			//Rotate the device frame around its z axis by alpha degrees, with alpha in [0, 360]
+			//Rotate the device frame around its x axis by beta degrees, with beta in [-180, 180]
+			//Rotate the device frame around its y axis by gamma degrees, with gamma in [-90, 90]
 			window.addEventListener('deviceorientation',function(event){
 				var a = document.getElementById('alpha'),
 				b = document.getElementById('beta'),
@@ -320,12 +322,12 @@ index.html
 				beta = event.beta,
 				gamma = event.gamma;
 
-				a.innerHTML = Math.round(alpha); //四捨五入
+				a.innerHTML = Math.round(alpha); //standard rounding
 				b.innerHTML = Math.round(beta);
 				g.innerHTML = Math.round(gamma);
 			},false);
 
-			window.addEventListener('devicemotion',function(event){ //行動裝置的加速度計
+			window.addEventListener('devicemotion',function(event){ //detecte mobile's accelerometer event - devicemotion
 				var tx = document.getElementById('tx'),
 				ty = document.getElementById('ty'),
 				tz = document.getElementById('tz'),
@@ -339,7 +341,7 @@ index.html
 				tx.innerHTML = Math.round(x);
 				ty.innerHTML = Math.round(y);
 				tz.innerHTML = Math.round(z);
-				if(Math.round(x) > 32){ //搖動手機一定程度時，觸發Slot Machine跑
+				if(Math.round(x) > 32){ // when acceleration x > 32, ajax post data to Webserver.js
 					//string = string + 'i ='+i+'\n' ;
 					//num.innerHTML = string;
 					i++;
@@ -359,7 +361,7 @@ index.html
 				}
 			},false);
 		
-		function gameover(){ //關閉7節管
+		function gameover(){ //Close seven-segement
 			$.ajax({
 				type:'POST',
 				url:'/gameover',
