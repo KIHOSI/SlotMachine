@@ -15,6 +15,7 @@ def gameStart():
     randNum1 = random.randint(0,9)
     randNum2 = random.randint(0,9)
     randNum3 = random.randint(0,9)   
+    #randNum1 = randNum2 = randNum3 = 7
     seg1.call7Segment(randNum1) # String to int
     seg2.call7Segment(randNum2) # 隨機產生0~9
     seg3.call7Segment(randNum3)
