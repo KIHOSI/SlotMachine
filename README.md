@@ -123,10 +123,9 @@ seg3 = SevenSegement(27,26,11,10,6,5,4)
 #Game Start
 def gameStart():
     print("start")
-    #randNum1 = random.randint(0,9)
-    #randNum2 = random.randint(0,9)
-    #randNum3 = random.randint(0,9)   
-    randNum1 = randNum2 = randNum3 = 7
+    randNum1 = random.randint(0,9)
+    randNum2 = random.randint(0,9)
+    randNum3 = random.randint(0,9)   
     seg1.call7Segment(randNum1) # String to int
     seg2.call7Segment(randNum2) # generate random number 0~9
     seg3.call7Segment(randNum3)
